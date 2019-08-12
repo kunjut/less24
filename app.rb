@@ -10,6 +10,7 @@ end
 
 get '/about' do
 	@title = 'О нас'
+	@error = 'Something wrong!TEST'
 	erb :about
 end
 
@@ -37,15 +38,27 @@ post '/visit' do
 	@master = params[:master]
 	@colorpicker = params[:colorpicker]
 
+	hh = {	:username => 'Не введено имя',
+			:phonenumber => 'Не введен телефон',
+			:datetime => 'Не указана дата визита',
+			:master => 'Не выбран мастер'}
+
+	hh.each do |k,v|
+		if params[k] == ''
+			@error = hh[k]
+			return erb :visit
+		end
+	end
+
 	@f = File.open './public/users.txt','a'
 	@f.write "username: #{@username}; phonenumber: #{@phonenumber}; datetime: #{@datetime}; master: #{@master}; color: #{@colorpicker}\n"
 	@f.close
 
-	#erb :visit
 	erb "Отлично #{@username}, мастер #{@master} ждет вас #{@datetime}.<br/>
-		Вы выбрали покраситься в #{@colorpicker} цвет.<br/>
-		За 3 часа до приема пришлем вам смс на номер #{@phonenumber}.<br/>
-		До встречи!"
+	Вы выбрали покраситься в #{@colorpicker} цвет.<br/>
+	За 3 часа до приема пришлем вам смс на номер #{@phonenumber}.<br/>
+	До встречи!"
+	#erb :visit
 end
 
 post '/contacts' do
