@@ -43,11 +43,16 @@ post '/visit' do
 			:datetime => 'Не указана дата визита',
 			:master => 'Не выбран мастер'}
 
-	hh.each do |k,v|
-		if params[k] == '' || params[k] == nil
-			@error = hh[k]
-			return erb :visit
-		end			
+#	hh.each do |k,v|
+#		if params[k] == '' || params[k] == nil
+#			@error = hh[k]
+#			return erb :visit
+#		end			
+#	end
+
+	@error = hh.select {|k,v| params[k] == '' || params[k] == nil}.values.join(", ")
+	if @error != ''
+		return erb :visit
 	end
 
 	@f = File.open './public/users.txt','a'
