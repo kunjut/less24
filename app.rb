@@ -44,10 +44,10 @@ post '/visit' do
 			:master => 'Не выбран мастер'}
 
 	hh.each do |k,v|
-		if params[k] == ''
+		if params[k] == '' || params[k] == nil
 			@error = hh[k]
 			return erb :visit
-		end
+		end			
 	end
 
 	@f = File.open './public/users.txt','a'
