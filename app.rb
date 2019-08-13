@@ -43,17 +43,28 @@ post '/visit' do
 			:datetime => 'Не указана дата визита',
 			:master => 'Не выбран мастер'}
 
-#	hh.each do |k,v|
-#		if params[k] == '' || params[k] == nil
-#			@error = hh[k]
-#			return erb :visit
-#		end			
-#	end
+	# Решение №1, без суммирования значений хеша
+	#	hh.each do |k,v|
+	#		if params[k] == '' || params[k] == nil
+	#			@error = hh[k]
+	#			return erb :visit
+	#		end			
+	#	end
 
-	@error = hh.select {|k,v| params[k] == '' || params[k] == nil}.values.join(", ")
+	# Решение №2, с суммированием значений хеша
+	#	@error = hh.select {|k,v| params[k] == '' || params[k] == nil}.values.join(", ")
+	#	if @error != '' # если @error не пустая вернуть erb, иначе код дальше
+	#		return erb :visit
+	#	end
+	# Решение №3, (часть1/2), с суммированием значений хеша + вынос в отдельную функцию
+	select_hash? hh
 	if @error != ''
 		return erb :visit
 	end
+	#	if select_hash? hh ///чет этот вариант работает не совсем как надо
+	#		return erb :visit
+	#	end
+	#------------------------------------------------------------------------------------#
 
 	@f = File.open './public/users.txt','a'
 	@f.write "username: #{@username}; phonenumber: #{@phonenumber}; datetime: #{@datetime}; master: #{@master}; color: #{@colorpicker}\n"
@@ -63,8 +74,13 @@ post '/visit' do
 	Вы выбрали покраситься в #{@colorpicker} цвет.<br/>
 	За 3 часа до приема пришлем вам смс на номер #{@phonenumber}.<br/>
 	До встречи!"
-	#erb :visit
 end
+
+# Решение №3, (часть2/2), с суммированием значений хеша + вынос в отдельную функцию
+def select_hash? hh
+	@error = hh.select {|k,v| params[k] == '' || params[k] == nil}.values.join(", ")
+end
+#------------------------------------------------------------------------------------#
 
 post '/contacts' do
 	@title = 'Контакты'
